@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 
 // Admin page component
@@ -56,7 +55,7 @@ const AdminPage: React.FC = () => {
                 <div className="text-center p-8 bg-white shadow-lg rounded-lg">
                     <h1 className="text-3xl font-bold text-red-600">גישה נדחתה</h1>
                     <p className="mt-4 text-lg text-gray-700">אין לך הרשאה לגשת לעמוד זה.</p>
-                     <Link to="/" className="mt-6 inline-block bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded hover:bg-yellow-600">חזרה לדף הבית</Link>
+                     <a href="/" className="mt-6 inline-block bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded hover:bg-yellow-600">חזרה לדף הבית</a>
                 </div>
             </div>
         );
@@ -66,7 +65,7 @@ const AdminPage: React.FC = () => {
         <div className="container mx-auto px-6 py-12 pt-24" dir="rtl">
             <div className="flex justify-between items-center mb-8 border-b pb-4">
                 <h1 className="text-4xl font-bold text-gray-800">ניהול תיק עבודות</h1>
-                <Link to="/" className="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 transition-colors">צפה באתר</Link>
+                <a href="/" className="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 transition-colors">צפה באתר</a>
             </div>
 
             {/* Add New Project Form */}
