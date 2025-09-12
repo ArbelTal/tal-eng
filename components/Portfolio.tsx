@@ -36,11 +36,14 @@ const ChevronRightIcon: React.FC<{className?: string}> = ({ className }) => (
 const Portfolio: React.FC = () => {
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
     
     // Refs for robust touch handling
     const touchStartX = useRef(0);
     const touchStartY = useRef(0);
     const isSwiping = useRef(false);
+    const carouselRef = useRef<HTMLDivElement>(null);
 
     // Check for mobile on mount and resize
     useEffect(() => {
@@ -69,52 +72,60 @@ const Portfolio: React.FC = () => {
     };
 
     const handleTouchStart = (e: React.TouchEvent) => {
+        setIsDragging(true);
         touchStartX.current = e.touches[0].clientX;
         touchStartY.current = e.touches[0].clientY;
         isSwiping.current = false; // Reset on new touch
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (touchStartX.current === 0) return;
+        if (!isDragging) return;
 
         const currentX = e.touches[0].clientX;
         const currentY = e.touches[0].clientY;
-        const diffX = touchStartX.current - currentX;
-        const diffY = touchStartY.current - currentY;
+        const diffX = currentX - touchStartX.current;
+        const diffY = currentY - touchStartY.current;
         
-        // Determine if horizontal movement is dominant, which indicates a swipe.
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-            isSwiping.current = true;
-            // This is crucial: it prevents the browser from scrolling the page
-            // up and down while the user is trying to swipe left or right.
-            e.preventDefault();
+        if (!isSwiping.current) {
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+                isSwiping.current = true;
+            } else if (Math.abs(diffY) > Math.abs(diffX)) {
+                setIsDragging(false);
+                return;
+            } else {
+                return;
+            }
         }
+        
+        e.preventDefault();
+        setDragOffset(diffX);
     };
 
-    const handleTouchEnd = (e: React.TouchEvent) => {
+    const handleTouchEnd = () => {
+        if (!isDragging) return;
+        setIsDragging(false);
+
         if (!isSwiping.current) {
-            touchStartX.current = 0;
-            touchStartY.current = 0;
+            setDragOffset(0);
             return;
         }
+        
+        const carouselWidth = carouselRef.current?.offsetWidth;
+        const swipeThreshold = carouselWidth ? carouselWidth / 4 : 50;
 
-        const touchEndX = e.changedTouches[0].clientX;
-        const diffX = touchStartX.current - touchEndX;
-        const swipeThreshold = 50; // Minimum distance to be considered a swipe
-
-        if (diffX > swipeThreshold) {
-            nextProject();
-        } else if (diffX < -swipeThreshold) {
+        if (dragOffset < -swipeThreshold) { // Swipe right-to-left
             prevProject();
+        } else if (dragOffset > swipeThreshold) { // Swipe left-to-right
+            nextProject();
         }
         
-        // Reset refs for the next touch gesture
+        setDragOffset(0);
+        
         touchStartX.current = 0;
         touchStartY.current = 0;
         isSwiping.current = false;
     };
     
-    // Common header for both views
     const portfolioHeader = (
         <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800">תיק עבודות</h2>
@@ -145,46 +156,75 @@ const Portfolio: React.FC = () => {
                     // Mobile Carousel View
                     <div className="relative w-full max-w-lg mx-auto" role="region" aria-label="קרוסלת פרויקטים">
                         <div 
-                            className="relative h-[29rem] overflow-hidden rounded-lg shadow-xl"
+                            ref={carouselRef}
+                            className="relative h-[29rem] cursor-grab active:cursor-grabbing overflow-hidden"
                             onTouchStart={handleTouchStart}
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
                         >
-                           {projects.map((project, index) => (
-                                <div 
-                                    key={project.id} 
-                                    aria-hidden={index !== currentIndex}
-                                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0'}`}
-                                >
-                                    <ProjectCard project={project} />
-                                </div>
-                           ))}
+                           {projects.map((project, index) => {
+                                const offset = index - currentIndex;
+                                const isVisible = Math.abs(offset) <= 1;
+
+                                // Calculate the transform based on drag and resting state
+                                const dragPercentage = (dragOffset / (carouselRef.current?.offsetWidth || 1)) * 100;
+                                const finalTranslateX = (-offset * 100) + (isDragging ? dragPercentage : 0);
+                                const distance = Math.abs(finalTranslateX / 100);
+                                const finalScale = Math.max(0, 1 - distance * 0.2);
+
+                                return (
+                                    <div 
+                                        key={project.id} 
+                                        aria-hidden={index !== currentIndex}
+                                        className="absolute inset-0"
+                                        style={{ 
+                                            transform: `translateX(${finalTranslateX}%) scale(${finalScale})`,
+                                            transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
+                                            opacity: isVisible || isDragging ? 1 : 0,
+                                            zIndex: projects.length - Math.abs(offset),
+                                            pointerEvents: offset === 0 ? 'auto' : 'none',
+                                        }}
+                                    >
+                                        <ProjectCard project={project} />
+                                    </div>
+                                );
+                           })}
                         </div>
 
                         {/* Navigation Buttons */}
                          <button 
                             onClick={prevProject} 
                             aria-label="הפרויקט הקודם"
-                            className="absolute top-1/2 -right-3 sm:-right-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
-                            <ChevronRightIcon className="w-6 h-6 text-gray-800" />
+                            className="absolute top-1/2 -left-3 sm:-left-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
+                             <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
                         </button>
                          <button 
                             onClick={nextProject} 
                             aria-label="הפרויקט הבא"
-                            className="absolute top-1/2 -left-3 sm:-left-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
-                             <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
+                            className="absolute top-1/2 -right-3 sm:-right-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
+                            <ChevronRightIcon className="w-6 h-6 text-gray-800" />
                         </button>
                         
                         {/* Dot Indicators */}
-                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3 rtl:space-x-reverse">
-                             {projects.map((_, index) => (
-                                <button 
-                                    key={index}
-                                    onClick={() => setCurrentIndex(index)}
-                                    aria-label={`עבור לפרויקט ${index + 1}`}
-                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-yellow-500 scale-125' : 'bg-gray-400 hover:bg-gray-500'}`}
+                        <div className="absolute -bottom-12 inset-x-0">
+                            <div className="relative mx-auto flex w-fit items-center justify-center gap-3 p-1">
+                                {projects.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setCurrentIndex(index)}
+                                        aria-label={`עבור לפרויקט ${index + 1}`}
+                                        className="h-3 w-3 rounded-full bg-gray-400 transition-colors hover:bg-gray-500"
+                                        aria-current={index === currentIndex ? 'true' : 'false'}
+                                    />
+                                ))}
+                                <div
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-yellow-500 transition-transform duration-500 ease-in-out"
+                                    style={{
+                                        transform: `translateX(${-currentIndex * 1.5}rem) translateY(-50%)`,
+                                    }}
                                 />
-                            ))}
+                            </div>
                         </div>
                     </div>
                 ) : (
