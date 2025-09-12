@@ -38,12 +38,13 @@ const ContactIcon: React.FC<{className?: string}> = ({ className }) => (
 );
 
 interface HeaderProps {
+    onHomeClick: () => void;
     onAboutClick: () => void;
     onPortfolioClick: () => void;
     onContactClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onAboutClick, onPortfolioClick, onContactClick }) => {
+const Header: React.FC<HeaderProps> = ({ onHomeClick, onAboutClick, onPortfolioClick, onContactClick }) => {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ onAboutClick, onPortfolioClick, onConta
         <>
             <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-gray-800 shadow-lg' : 'bg-transparent'}`}>
                 <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center gap-x-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                    <div className="flex items-center gap-x-3 cursor-pointer" onClick={onHomeClick}>
                         <BoltIcon className="w-7 h-7 text-yellow-400" />
                         <span className="text-2xl font-bold text-white">טל הנדסת חשמל</span>
                     </div>
