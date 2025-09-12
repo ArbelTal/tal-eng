@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PROJECTS as projects } from '../constants';
+import { useProjects } from '../hooks/useProjects';
 import type { Project } from '../types';
 
 // A redesigned, more accessible project card
@@ -34,6 +34,7 @@ const ChevronRightIcon: React.FC<{className?: string}> = ({ className }) => (
 
 
 const Portfolio: React.FC = () => {
+    const [projects] = useProjects();
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     
@@ -103,9 +104,9 @@ const Portfolio: React.FC = () => {
         const swipeThreshold = 50; // Minimum distance to be considered a swipe
 
         if (diffX > swipeThreshold) { // Swipe left
-            prevProject();
-        } else if (diffX < -swipeThreshold) { // Swipe right
             nextProject();
+        } else if (diffX < -swipeThreshold) { // Swipe right
+            prevProject();
         }
         
         // Reset refs for the next touch gesture
@@ -136,6 +137,16 @@ const Portfolio: React.FC = () => {
         );
     }
 
+    const getTransformClass = (index: number) => {
+        if (index === currentIndex) {
+            return 'translate-x-0'; // Current item, visible
+        }
+        if (index < currentIndex) {
+            return '-translate-x-full'; // Items to the left
+        }
+        return 'translate-x-full'; // Items to the right
+    };
+
     return (
         <section id="portfolio" className="py-20 bg-gray-100">
             <div className="container mx-auto px-6">
@@ -154,8 +165,7 @@ const Portfolio: React.FC = () => {
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
-                                    className="absolute inset-0 transition-transform duration-500 ease-in-out"
-                                    style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
+                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out ${getTransformClass(index)}`}
                                 >
                                     <ProjectCard project={project} />
                                 </div>

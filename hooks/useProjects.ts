@@ -4,7 +4,7 @@ import { PROJECTS as initialProjects } from '../constants';
 
 const LOCAL_STORAGE_KEY = 'portfolio_projects';
 
-export const useProjects = (): [Project[], (project: Omit<Project, 'id'>) => void, (id: number) => void] => {
+export const useProjects = (): [Project[], (project: Omit<Project, 'id'>) => void, (id: number) => void, React.Dispatch<React.SetStateAction<Project[]>>] => {
   const [projects, setProjects] = useState<Project[]>(() => {
     try {
       const storedProjects = window.localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -42,5 +42,5 @@ export const useProjects = (): [Project[], (project: Omit<Project, 'id'>) => voi
     }
   };
 
-  return [projects, addProject, deleteProject];
+  return [projects, addProject, deleteProject, setProjects];
 };
