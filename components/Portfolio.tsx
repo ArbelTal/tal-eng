@@ -103,9 +103,9 @@ const Portfolio: React.FC = () => {
         const swipeThreshold = 50; // Minimum distance to be considered a swipe
 
         if (diffX > swipeThreshold) { // Swipe left
-            prevProject();
-        } else if (diffX < -swipeThreshold) { // Swipe right
             nextProject();
+        } else if (diffX < -swipeThreshold) { // Swipe right
+            prevProject();
         }
         
         // Reset refs for the next touch gesture
@@ -125,7 +125,7 @@ const Portfolio: React.FC = () => {
 
     if (projects.length === 0) {
         return (
-            <section id="portfolio" className="py-20 bg-gray-100">
+            <section id="portfolio" className="py-20 bg-gray-200">
                 <div className="container mx-auto px-6">
                     {portfolioHeader}
                     <div className="text-center text-gray-500 py-10 bg-white rounded-lg shadow">
@@ -137,7 +137,7 @@ const Portfolio: React.FC = () => {
     }
 
     return (
-        <section id="portfolio" className="py-20 bg-gray-100">
+        <section id="portfolio" className="py-20 bg-gray-200">
             <div className="container mx-auto px-6">
                 {portfolioHeader}
                 
@@ -154,8 +154,8 @@ const Portfolio: React.FC = () => {
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
-                                    className="absolute inset-0 transition-transform duration-500 ease-in-out"
-                                    style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
+                                    className={`absolute inset-0 transition-all duration-500 ease-in-out ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
+                                    style={{ transform: `translateX(${(currentIndex - index) * 100}%)` }}
                                 >
                                     <ProjectCard project={project} />
                                 </div>
@@ -191,8 +191,10 @@ const Portfolio: React.FC = () => {
                 ) : (
                     // Desktop Grid View
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {projects.map(project => (
-                            <ProjectCard key={project.id} project={project} />
+                        {projects.map((project, index) => (
+                             <div key={project.id} className="animate-grow-in" style={{ animationDelay: `${index * 100}ms` }}>
+                                <ProjectCard project={project} />
+                            </div>
                         ))}
                     </div>
                 )}
