@@ -154,27 +154,16 @@ const Portfolio: React.FC = () => {
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
-                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out`}
-                                    style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
+                                    className="absolute inset-0 transition-all duration-500 ease-in-out"
+                                    style={{
+                                        transform: `translateX(${(index - currentIndex) * 100}%) scale(${index === currentIndex ? 1 : 0.85})`,
+                                        opacity: index === currentIndex ? 1 : 0,
+                                    }}
                                 >
                                     <ProjectCard project={project} />
                                 </div>
                            ))}
                         </div>
-
-                        {/* Navigation Buttons */}
-                         <button 
-                            onClick={prevProject} 
-                            aria-label="הפרויקט הקודם"
-                            className="absolute top-1/2 -left-3 sm:-left-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
-                             <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
-                        </button>
-                         <button 
-                            onClick={nextProject} 
-                            aria-label="הפרויקט הבא"
-                            className="absolute top-1/2 -right-3 sm:-right-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition z-20">
-                            <ChevronRightIcon className="w-6 h-6 text-gray-800" />
-                        </button>
                         
                         {/* Dot Indicators */}
                         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3 rtl:space-x-reverse">

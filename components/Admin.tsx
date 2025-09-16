@@ -50,7 +50,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         const pass = prompt('אנא הזן את סיסמת הניהול:');
-        if (pass === 'ArbelAdmin2024') { // Simple hardcoded password
+        if (pass === 'arbel8395') { // Simple hardcoded password
             setIsAuthenticated(true);
         }
     }, []);
