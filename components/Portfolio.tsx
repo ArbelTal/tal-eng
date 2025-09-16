@@ -102,9 +102,9 @@ const Portfolio: React.FC = () => {
         const diffX = touchStartX.current - touchEndX;
         const swipeThreshold = 50; // Minimum distance to be considered a swipe
 
-        if (diffX > swipeThreshold) { // Swipe left
+        if (diffX > swipeThreshold) { // Swipe left (finger R to L)
             nextProject();
-        } else if (diffX < -swipeThreshold) { // Swipe right
+        } else if (diffX < -swipeThreshold) { // Swipe right (finger L to R)
             prevProject();
         }
         
@@ -154,8 +154,8 @@ const Portfolio: React.FC = () => {
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
-                                    className={`absolute inset-0 transition-all duration-500 ease-in-out ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
-                                    style={{ transform: `translateX(${(currentIndex - index) * 100}%)` }}
+                                    className={`absolute inset-0 transition-all duration-500 ease-in-out ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-80 opacity-0'}`}
+                                    style={{ transform: `translateX(${(index - currentIndex) * -100}%)` }}
                                 >
                                     <ProjectCard project={project} />
                                 </div>
