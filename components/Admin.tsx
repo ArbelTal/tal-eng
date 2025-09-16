@@ -1,6 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useProjects } from '../hooks/useProjects';
 
+// Icons for buttons and UI elements
+const EyeIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+    </svg>
+);
+
+const PlusIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+);
+
+const TrashIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.124-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.077-2.09.921-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+    </svg>
+);
+
+const LockClosedIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 0 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+    </svg>
+);
+
 // Admin page component
 const AdminPage: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -51,65 +77,82 @@ const AdminPage: React.FC = () => {
 
     if (!isAuthenticated) {
         return (
-            <div className="flex items-center justify-center h-screen bg-gray-100">
-                <div className="text-center p-8 bg-white shadow-lg rounded-lg">
-                    <h1 className="text-3xl font-bold text-red-600">גישה נדחתה</h1>
-                    <p className="mt-4 text-lg text-gray-700">אין לך הרשאה לגשת לעמוד זה.</p>
-                     <a href="/" className="mt-6 inline-block bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded hover:bg-yellow-600">חזרה לדף הבית</a>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="text-center p-10 bg-white shadow-xl rounded-2xl border border-gray-200 max-w-md w-full">
+                    <LockClosedIcon className="w-16 h-16 mx-auto text-red-500" />
+                    <h1 className="text-3xl font-bold text-red-600 mt-4">גישה נדחתה</h1>
+                    <p className="mt-4 text-lg text-gray-600">אין לך הרשאה לגשת לעמוד זה.</p>
+                     <a href="/" className="mt-8 inline-block bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                         חזרה לדף הבית
+                     </a>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto px-6 py-12 pt-24" dir="rtl">
-            <div className="flex justify-between items-center mb-8 border-b pb-4">
-                <h1 className="text-4xl font-bold text-gray-800">ניהול תיק עבודות</h1>
-                <a href="/" className="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 transition-colors">צפה באתר</a>
-            </div>
+        <div className="bg-gray-100 min-h-screen" dir="rtl">
+            <div className="container mx-auto px-6 py-12">
+                {/* Header */}
+                <header className="flex flex-col sm:flex-row justify-between items-center mb-10 pb-6 border-b-2 border-gray-200">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">ניהול תיק עבודות</h1>
+                    <a href="/" className="flex items-center gap-x-2 bg-gray-700 text-white font-bold py-2 px-5 rounded-lg hover:bg-gray-800 transition-colors duration-300 shadow-sm">
+                        <EyeIcon className="w-5 h-5" />
+                        <span>צפה באתר</span>
+                    </a>
+                </header>
 
-            {/* Add New Project Form */}
-            <div className="bg-white p-8 rounded-lg shadow-lg mb-12">
-                <h2 className="text-2xl font-bold mb-6">הוספת פרויקט חדש</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700">כותרת</label>
-                        <input type="text" name="title" id="title" value={newProject.title} onChange={handleInputChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required />
-                    </div>
-                    <div>
-                        <label htmlFor="category" className="block text-sm font-medium text-gray-700">קטגוריה</label>
-                        <input type="text" name="category" id="category" value={newProject.category} onChange={handleInputChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required />
-                    </div>
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">תיאור</label>
-                        <textarea name="description" id="description" value={newProject.description} onChange={handleInputChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required></textarea>
-                    </div>
-                    <div>
-                        <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">תמונה</label>
-                        <input type="file" name="imageUrl" id="imageUrl" onChange={handleImageChange} accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-100 file:text-yellow-700 hover:file:bg-yellow-200" required />
-                        <p className="text-xs text-gray-500 mt-1">מומלץ להעלות תמונות קטנות (מתחת ל-1MB) כדי למנוע חריגה ממגבלת האחסון של הדפדפן.</p>
-                    </div>
-                    <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-md transition-colors text-lg">הוסף פרויקט</button>
-                </form>
-            </div>
-            
-            {/* Existing Projects List */}
-            <div>
-                 <h2 className="text-2xl font-bold mb-6">פרויקטים קיימים ({projects.length})</h2>
-                 <div className="space-y-4">
-                    {projects.map(project => (
-                        <div key={project.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between gap-x-4">
-                            <div className="flex items-center gap-x-4 flex-grow min-w-0">
-                                <img src={project.imageUrl} alt={project.title} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md flex-shrink-0"/>
-                                <div className="min-w-0">
-                                    <h3 className="text-lg font-bold truncate">{project.title}</h3>
-                                    <p className="text-sm text-gray-600">{project.category}</p>
-                                </div>
+                {/* Add New Project Form */}
+                <div className="bg-white p-8 rounded-xl shadow-xl mb-12">
+                    <h2 className="text-2xl font-bold mb-6 text-gray-800">הוספת פרויקט חדש</h2>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div>
+                                <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-1">כותרת</label>
+                                <input type="text" name="title" id="title" value={newProject.title} onChange={handleInputChange} className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-shadow duration-200" required />
                             </div>
-                            <button onClick={() => deleteProject(project.id)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 sm:px-4 rounded-md transition-colors flex-shrink-0">מחק</button>
+                            <div>
+                                <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">קטגוריה</label>
+                                <input type="text" name="category" id="category" value={newProject.category} onChange={handleInputChange} className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-shadow duration-200" required />
+                            </div>
                         </div>
-                    ))}
-                 </div>
+                        <div>
+                            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1">תיאור</label>
+                            <textarea name="description" id="description" value={newProject.description} onChange={handleInputChange} rows={4} className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-shadow duration-200" required></textarea>
+                        </div>
+                        <div>
+                            <label htmlFor="imageUrl" className="block text-sm font-semibold text-gray-700 mb-1">תמונה</label>
+                            <input type="file" name="imageUrl" id="imageUrl" onChange={handleImageChange} accept="image/*" className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-100 file:text-yellow-800 hover:file:bg-yellow-200 cursor-pointer" required />
+                            <p className="text-xs text-gray-500 mt-2">מומלץ להעלות תמונות קטנות (מתחת ל-1MB) כדי למנוע חריגה ממגבלת האחסון של הדפדפן.</p>
+                        </div>
+                        <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 text-lg shadow-md hover:shadow-lg transform hover:scale-[1.01] flex items-center justify-center gap-x-2">
+                            <PlusIcon className="w-6 h-6" />
+                            <span>הוסף פרויקט</span>
+                        </button>
+                    </form>
+                </div>
+                
+                {/* Existing Projects List */}
+                <div>
+                     <h2 className="text-3xl font-bold mb-6 text-gray-800">פרויקטים קיימים ({projects.length})</h2>
+                     <div className="space-y-4">
+                        {projects.map(project => (
+                            <div key={project.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between gap-x-4 transition-all duration-300 hover:shadow-lg border border-transparent hover:border-gray-200">
+                                <div className="flex items-center gap-x-4 flex-grow min-w-0">
+                                    <img src={project.imageUrl} alt={project.title} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"/>
+                                    <div className="min-w-0">
+                                        <h3 className="text-lg font-bold truncate text-gray-800">{project.title}</h3>
+                                        <p className="text-sm text-gray-500">{project.category}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => deleteProject(project.id)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors flex-shrink-0 flex items-center gap-x-1.5">
+                                    <TrashIcon className="w-5 h-5"/>
+                                    <span className="hidden sm:inline">מחק</span>
+                                </button>
+                            </div>
+                        ))}
+                     </div>
+                </div>
             </div>
         </div>
     );

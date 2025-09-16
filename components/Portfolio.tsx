@@ -154,8 +154,8 @@ const Portfolio: React.FC = () => {
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
-                                    className={`absolute inset-0 transition-all duration-500 ease-in-out ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-80 opacity-0'}`}
-                                    style={{ transform: `translateX(${(index - currentIndex) * -100}%)` }}
+                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out`}
+                                    style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
                                 >
                                     <ProjectCard project={project} />
                                 </div>
