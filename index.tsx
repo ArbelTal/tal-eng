@@ -10,8 +10,8 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 
-// Simple routing based on URL path to show the admin page
-const isAdminRoute = /\/admin\/?$/i.test(window.location.pathname);
+// Simple routing based on URL search parameter to show the admin page
+const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true';
 
 root.render(
   <React.StrictMode>
