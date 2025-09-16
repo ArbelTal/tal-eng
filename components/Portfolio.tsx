@@ -156,7 +156,7 @@ const Portfolio: React.FC = () => {
                                     aria-hidden={index !== currentIndex}
                                     className="absolute inset-0 transition-all duration-500 ease-in-out"
                                     style={{
-                                        transform: `translateX(${-(index - currentIndex) * 100}%) scale(${index === currentIndex ? 1 : 0.85})`,
+                                        transform: `translateX(${(index - currentIndex) * 100}%) scale(${index === currentIndex ? 1 : 0.85})`,
                                         opacity: index === currentIndex ? 1 : 0,
                                     }}
                                 >
