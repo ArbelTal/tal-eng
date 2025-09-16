@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useProjects } from '../hooks/useProjects';
+import { PROJECTS } from '../constants';
 import type { Project } from '../types';
 
 // A redesigned, more accessible project card
@@ -34,7 +34,6 @@ const ChevronRightIcon: React.FC<{className?: string}> = ({ className }) => (
 
 
 const Portfolio: React.FC = () => {
-    const [projects] = useProjects();
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     
@@ -52,21 +51,15 @@ const Portfolio: React.FC = () => {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-    
-    // Reset index if projects array changes to prevent out-of-bounds errors
-    useEffect(() => {
-        setCurrentIndex(0);
-    }, [projects]);
-
 
     const nextProject = () => {
-        if (projects.length === 0) return;
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % projects.length);
+        if (PROJECTS.length === 0) return;
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % PROJECTS.length);
     };
 
     const prevProject = () => {
-        if (projects.length === 0) return;
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + projects.length) % projects.length);
+        if (PROJECTS.length === 0) return;
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + PROJECTS.length) % PROJECTS.length);
     };
 
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -125,7 +118,7 @@ const Portfolio: React.FC = () => {
         </div>
     );
 
-    if (projects.length === 0) {
+    if (PROJECTS.length === 0) {
         return (
             <section id="portfolio" className="py-20 bg-gray-200">
                 <div className="container mx-auto px-6">
@@ -152,7 +145,7 @@ const Portfolio: React.FC = () => {
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
                         >
-                           {projects.map((project, index) => (
+                           {PROJECTS.map((project, index) => (
                                 <div 
                                     key={project.id} 
                                     aria-hidden={index !== currentIndex}
@@ -169,7 +162,7 @@ const Portfolio: React.FC = () => {
                         
                         {/* Dot Indicators */}
                         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3 rtl:space-x-reverse">
-                             {projects.map((_, index) => (
+                             {PROJECTS.map((_, index) => (
                                 <button 
                                     key={index}
                                     onClick={() => setCurrentIndex(index)}
@@ -182,7 +175,7 @@ const Portfolio: React.FC = () => {
                 ) : (
                     // Desktop Grid View
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {projects.map((project, index) => (
+                        {PROJECTS.map((project, index) => (
                              <div key={project.id} className="animate-grow-in" style={{ animationDelay: `${index * 100}ms` }}>
                                 <ProjectCard project={project} />
                             </div>

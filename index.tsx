@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import AdminPage from './components/Admin';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -10,11 +9,8 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 
-// Simple routing based on URL search parameter to show the admin page
-const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true';
-
 root.render(
   <React.StrictMode>
-    {isAdminRoute ? <AdminPage /> : <App />}
+    <App />
   </React.StrictMode>
 );
