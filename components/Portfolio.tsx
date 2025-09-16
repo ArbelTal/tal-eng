@@ -103,10 +103,11 @@ const Portfolio: React.FC = () => {
         const diffX = touchStartX.current - touchEndX;
         const swipeThreshold = 50; // Minimum distance to be considered a swipe
 
-        if (diffX > swipeThreshold) { // Swipe left (finger R to L)
-            nextProject();
-        } else if (diffX < -swipeThreshold) { // Swipe right (finger L to R)
+        // Flipped for RTL: swipe left shows previous, swipe right shows next
+        if (diffX > swipeThreshold) { // Swipe left (finger R to L) -> See previous item (on the right)
             prevProject();
+        } else if (diffX < -swipeThreshold) { // Swipe right (finger L to R) -> See next item (on the left)
+            nextProject();
         }
         
         // Reset refs for the next touch gesture
@@ -157,7 +158,7 @@ const Portfolio: React.FC = () => {
                                     aria-hidden={index !== currentIndex}
                                     className="absolute inset-0 transition-all duration-500 ease-in-out"
                                     style={{
-                                        transform: `translateX(${(index - currentIndex) * 100}%) scale(${index === currentIndex ? 1 : 0.85})`,
+                                        transform: `translateX(${(currentIndex - index) * 100}%) scale(${index === currentIndex ? 1 : 0.85})`,
                                         opacity: index === currentIndex ? 1 : 0,
                                     }}
                                 >
