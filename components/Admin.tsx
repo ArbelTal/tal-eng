@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useProjects } from '../hooks/useProjects';
+import type { Project } from '../types';
 
 // Icons for buttons and UI elements
 const EyeIcon: React.FC<{className?: string}> = ({ className }) => (
@@ -21,6 +22,12 @@ const TrashIcon: React.FC<{className?: string}> = ({ className }) => (
     </svg>
 );
 
+const PencilIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+    </svg>
+);
+
 const LockClosedIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 0 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -30,7 +37,7 @@ const LockClosedIcon: React.FC<{className?: string}> = ({ className }) => (
 // Admin page component
 const AdminPage: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [projects, addProject, deleteProject] = useProjects();
+    const [projects, addProject, deleteProject, updateProject] = useProjects();
     
     const [newProject, setNewProject] = useState({
         title: '',
@@ -38,6 +45,8 @@ const AdminPage: React.FC = () => {
         category: '',
         imageUrl: ''
     });
+
+    const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     useEffect(() => {
         const pass = prompt('אנא הזן את סיסמת הניהול:');
@@ -72,6 +81,37 @@ const AdminPage: React.FC = () => {
             if(fileInput) fileInput.value = '';
         } else {
             alert('נא למלא את כל השדות.');
+        }
+    };
+    
+    // Handlers for the edit modal
+    const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (!editingProject) return;
+        const { name, value } = e.target;
+        setEditingProject(prev => prev ? { ...prev, [name]: value } : null);
+    };
+
+    const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!editingProject) return;
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditingProject(prev => prev ? { ...prev, imageUrl: reader.result as string } : null);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUpdateSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editingProject) {
+            updateProject(editingProject.id, {
+                title: editingProject.title,
+                description: editingProject.description,
+                imageUrl: editingProject.imageUrl,
+            });
+            setEditingProject(null); // Close modal on save
         }
     };
 
@@ -145,15 +185,62 @@ const AdminPage: React.FC = () => {
                                         <p className="text-sm text-gray-500">{project.category}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => deleteProject(project.id)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors flex-shrink-0 flex items-center gap-x-1.5">
-                                    <TrashIcon className="w-5 h-5"/>
-                                    <span className="hidden sm:inline">מחק</span>
-                                </button>
+                                <div className="flex items-center gap-x-2 flex-shrink-0">
+                                    <button onClick={() => setEditingProject(project)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors flex items-center gap-x-1.5">
+                                        <PencilIcon className="w-5 h-5"/>
+                                        <span className="hidden sm:inline">ערוך</span>
+                                    </button>
+                                    <button onClick={() => deleteProject(project.id)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors flex items-center gap-x-1.5">
+                                        <TrashIcon className="w-5 h-5"/>
+                                        <span className="hidden sm:inline">מחק</span>
+                                    </button>
+                                </div>
                             </div>
                         ))}
                      </div>
                 </div>
             </div>
+
+            {/* Edit Project Modal */}
+            {editingProject && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+                    onClick={() => setEditingProject(null)} // Close on backdrop click
+                >
+                    <div 
+                        className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-grow-in"
+                        onClick={e => e.stopPropagation()} // Prevent closing on modal click
+                    >
+                        <h2 className="text-2xl font-bold mb-6 text-gray-800">עריכת פרויקט</h2>
+                        <form onSubmit={handleUpdateSubmit} className="space-y-6">
+                            <div>
+                                <label htmlFor="editTitle" className="block text-sm font-semibold text-gray-700 mb-1">כותרת</label>
+                                <input type="text" name="title" id="editTitle" value={editingProject.title} onChange={handleEditInputChange} className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-shadow duration-200" required />
+                            </div>
+                            <div>
+                                <label htmlFor="editDescription" className="block text-sm font-semibold text-gray-700 mb-1">תיאור</label>
+                                <textarea name="description" id="editDescription" value={editingProject.description} onChange={handleEditInputChange} rows={4} className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-shadow duration-200" required></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">תמונה נוכחית</label>
+                                <img src={editingProject.imageUrl} alt="תמונה נוכחית" className="mt-2 w-32 h-32 object-cover rounded-lg border border-gray-200"/>
+                            </div>
+                            <div>
+                                <label htmlFor="editImageUrl" className="block text-sm font-semibold text-gray-700 mb-1">החלף תמונה</label>
+                                <input type="file" name="imageUrl" id="editImageUrl" onChange={handleEditImageChange} accept="image/*" className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-100 file:text-yellow-800 hover:file:bg-yellow-200 cursor-pointer" />
+                            </div>
+                            <div className="flex justify-end gap-x-4 pt-4 border-t border-gray-200 mt-8">
+                                <button type="button" onClick={() => setEditingProject(null)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors">
+                                    ביטול
+                                </button>
+                                <button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors">
+                                    שמור שינויים
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

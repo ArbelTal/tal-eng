@@ -4,7 +4,14 @@ import { PROJECTS as initialProjects } from '../constants';
 
 const LOCAL_STORAGE_KEY = 'portfolio_projects';
 
-export const useProjects = (): [Project[], (project: Omit<Project, 'id'>) => void, (id: number) => void] => {
+type UseProjectsReturnType = [
+  Project[],
+  (project: Omit<Project, 'id'>) => void,
+  (id: number) => void,
+  (id: number, updates: Partial<Omit<Project, 'id'>>) => void
+];
+
+export const useProjects = (): UseProjectsReturnType => {
   const [projects, setProjects] = useState<Project[]>(() => {
     try {
       const storedProjects = window.localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -42,5 +49,13 @@ export const useProjects = (): [Project[], (project: Omit<Project, 'id'>) => voi
     }
   };
 
-  return [projects, addProject, deleteProject];
+  const updateProject = (id: number, updates: Partial<Omit<Project, 'id'>>) => {
+    setProjects(prevProjects =>
+      prevProjects.map(project =>
+        project.id === id ? { ...project, ...updates } : project
+      )
+    );
+  };
+
+  return [projects, addProject, deleteProject, updateProject];
 };
