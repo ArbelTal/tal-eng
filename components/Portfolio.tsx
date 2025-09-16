@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PROJECTS as projects } from '../constants';
+import { useProjects } from '../hooks/useProjects';
 import type { Project } from '../types';
 
 // A redesigned, more accessible project card
@@ -34,6 +34,7 @@ const ChevronRightIcon: React.FC<{className?: string}> = ({ className }) => (
 
 
 const Portfolio: React.FC = () => {
+    const [projects] = useProjects();
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     
