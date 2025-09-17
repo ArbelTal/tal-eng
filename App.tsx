@@ -3,7 +3,6 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
 import Portfolio from './components/Portfolio';
-import Pricing from './components/Pricing';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { smoothScrollTo } from './utils/smoothScroll';
@@ -11,7 +10,6 @@ import { smoothScrollTo } from './utils/smoothScroll';
 const App: React.FC = () => {
   const aboutRef = useRef<HTMLDivElement>(null);
   const portfolioRef = useRef<HTMLDivElement>(null);
-  const pricingRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
 
   const scrollTo = (target: React.RefObject<HTMLDivElement> | number) => {
@@ -36,7 +34,6 @@ const App: React.FC = () => {
         onHomeClick={() => scrollTo(0)}
         onAboutClick={() => scrollTo(aboutRef)}
         onPortfolioClick={() => scrollTo(portfolioRef)}
-        onPricingClick={() => scrollTo(pricingRef)}
         onContactClick={contactScroll}
       />
       <main>
@@ -46,9 +43,6 @@ const App: React.FC = () => {
         </div>
         <div ref={portfolioRef}>
           <Portfolio />
-        </div>
-        <div ref={pricingRef}>
-          <Pricing onContactClick={contactScroll} />
         </div>
         <div ref={contactRef}>
           <Contact />
